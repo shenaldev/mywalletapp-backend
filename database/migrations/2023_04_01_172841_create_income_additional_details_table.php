@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('incomes', function (Blueprint $table) {
+        Schema::create('income_additional_details', function (Blueprint $table) {
             $table->id();
-            $table->string('from');
-            $table->decimal('value', 8, 2, true);
-            $table->date('date');
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('details');
+            $table->bigInteger('income_id')->unsigned();
+            $table->foreign('income_id')->on('incomes')->references('id');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('incomes');
+        Schema::dropIfExists('income_additional_details');
     }
 };

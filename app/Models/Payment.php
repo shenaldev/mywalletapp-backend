@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Income extends Model
+class Payment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'from', 'value', 'date',
+        'payment_for', 'value', 'date', 'category_id',
     ];
 
     public function user()
@@ -18,8 +18,14 @@ class Income extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public function additionalDetails()
     {
-        return $this->hasOne(IncomeAdditionalDetails::class);
+        return $this->hasOne(PaymentAdditionalDetail::class);
     }
+
 }

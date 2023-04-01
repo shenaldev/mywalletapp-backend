@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->string('payment_for');
+            $table->decimal('value', 8, 2, true);
+            $table->date('date');
+            $table->bigInteger('category_id')->unsigned();
+            $table->foreign('category_id')->on('categories')->references('id')->cascadeOnUpdate();
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
