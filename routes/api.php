@@ -3,6 +3,9 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\IncomesController;
+use App\Http\Controllers\PaymentsController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +25,15 @@ Route::post('/email/send-verification', [EmailVerificationController::class, 'se
 Route::post('/email/verify', [EmailVerificationController::class, 'validateCode']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/categories', [CategoriesController::class, 'index']);
+    //User Routes
+    Route::get('/user/register-year', [UserController::class, 'getRegisterYear']);
+    //Payment Routes
+    Route::post('/payments/add', [PaymentsController::class, 'store']);
+    Route::get('/payments/{year}/{month}', [PaymentsController::class, 'getPayments']);
+    //Income Routes
+    Route::post('/incomes/add', [IncomesController::class, 'store']);
+    Route::get('/incomes/{year}/{month}', [IncomesController::class, 'getIncomes']);
 });

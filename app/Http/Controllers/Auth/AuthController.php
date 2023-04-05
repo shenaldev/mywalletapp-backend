@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    protected $COOKIE_EXPIRE_TIME = 60 * 24;
+    protected $COOKIE_EXPIRE_TIME = 1 * (60 * 24 * 7);
     protected $AUTH_COOKIE_NAME = '_token';
     /**
      * Login Function
@@ -87,8 +87,16 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
         $cookie = Cookie::forget($this->AUTH_COOKIE_NAME);
-        $sesion_cookie = Cookie::forget('laravel_session');
+        $sesion_cookie = Cookie::forget('my_wallet_session');
 
         return response()->json(['logout' => true], 200)->withCookie($cookie)->withCookie($sesion_cookie);
+    }
+
+    /**
+     * Check Token Is Expired
+     */
+    public function checkToken()
+    {
+        return response()->json('true', 200);
     }
 }

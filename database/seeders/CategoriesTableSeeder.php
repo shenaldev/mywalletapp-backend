@@ -15,8 +15,8 @@ class CategoriesTableSeeder extends Seeder
     {
         //
         Category::create([
-            'name' => 'Primary',
-            'slug' => Str::slug('Primary'),
+            'name' => 'General',
+            'slug' => Str::slug('General'),
         ]);
 
         Category::create([
