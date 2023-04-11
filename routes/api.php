@@ -28,12 +28,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/categories', [CategoriesController::class, 'index']);
+
     //User Routes
     Route::get('/user/register-year', [UserController::class, 'getRegisterYear']);
+
     //Payment Routes
     Route::post('/payments/add', [PaymentsController::class, 'store']);
     Route::get('/payments/{year}/{month}', [PaymentsController::class, 'getPayments']);
+    Route::delete('/payment/{id}', [PaymentsController::class, 'destroy']);
+
     //Income Routes
     Route::post('/incomes/add', [IncomesController::class, 'store']);
     Route::get('/incomes/{year}/{month}', [IncomesController::class, 'getIncomes']);
+    Route::delete('/income/{id}', [IncomesController::class, 'destroy']);
+
 });

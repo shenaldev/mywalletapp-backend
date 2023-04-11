@@ -92,14 +92,6 @@ class IncomesController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
@@ -113,5 +105,13 @@ class IncomesController extends Controller
     public function destroy(string $id)
     {
         //
+        $income = Income::destroy($id);
+
+        if ($income) {
+            return response()->json(['success' => true], 200);
+        }
+
+        return response()->json(['success' => false], 404);
+
     }
 }

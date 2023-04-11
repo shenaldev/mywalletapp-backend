@@ -120,5 +120,12 @@ class PaymentsController extends Controller
     public function destroy(string $id)
     {
         //
+        $payment = Payment::destroy($id);
+
+        if ($payment) {
+            return response()->json(['success' => true], 200);
+        }
+
+        return response()->json(['success' => false], 404);
     }
 }
