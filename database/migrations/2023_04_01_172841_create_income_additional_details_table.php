@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('details');
             $table->bigInteger('income_id')->unsigned();
-            $table->foreign('income_id')->on('incomes')->references('id');
+            $table->foreign('income_id')->on('incomes')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

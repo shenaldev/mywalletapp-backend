@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('details');
             $table->bigInteger('payment_id')->unsigned();
-            $table->foreign('payment_id')->on('payments')->references('id');
+            $table->foreign('payment_id')->on('payments')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
