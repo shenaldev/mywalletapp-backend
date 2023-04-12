@@ -25,12 +25,13 @@ class PaymentsController extends Controller
 
         // Get All Payments by Category
         $payments = Payment::select('id', 'payment_for', 'amount', 'date', 'category_id')
+            ->with('category:id,slug')
             ->where('user_id', '=', $user)
             ->whereBetween('date', [$form, $to])
             ->where('category_id', '!=', '1') // Exclude Primary Category
             ->orderBy('date', 'asc')
             ->get()
-            ->groupBy('category_id');
+            ->groupBy('category.slug');
 
         //Payments Total By Category
         $totals = Payment::select('category_id', DB::raw('SUM(payments.amount) as total'))
