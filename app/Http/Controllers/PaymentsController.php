@@ -28,7 +28,6 @@ class PaymentsController extends Controller
             ->with('category:id,slug')
             ->where('user_id', '=', $user)
             ->whereBetween('date', [$form, $to])
-            ->where('category_id', '!=', '1') // Exclude Primary Category
             ->orderBy('date', 'asc')
             ->get()
             ->groupBy('category.slug');
@@ -40,14 +39,6 @@ class PaymentsController extends Controller
             ->groupBy('category_id')
             ->get();
 
-        // Get General Payments
-        $generalPayments = Payment::select('id', 'payment_for', 'amount', 'date')
-            ->where('user_id', '=', $user)
-            ->whereBetween('date', [$form, $to])
-            ->where('category_id', '=', '1')
-            ->orderBy('date', 'asc')
-            ->get();
-
         // GET TOTAL SUM OF ALL PAYMENTS
         $paymentsSum = Payment::where('user_id', '=', $user)
             ->whereBetween('date', [$form, $to])
@@ -55,7 +46,7 @@ class PaymentsController extends Controller
 
         return response()->json([
             'payments' => $payments,
-            'general' => $generalPayments,
+            //'general' => $generalPayments,
             'totals' => $totals,
             'payments_sum' => $paymentsSum,
         ]);

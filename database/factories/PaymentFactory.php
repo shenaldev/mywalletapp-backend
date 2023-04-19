@@ -21,7 +21,7 @@ class PaymentFactory extends Factory
             'payment_for' => fake()->realText(20),
             'amount' => fake()->biasedNumberBetween(100, 5000),
             'date' => fake()->dateTimeThisMonth('now'),
-            'category_id' => fake()->biasedNumberBetween(1, 7),
+            'category_id' => fake()->biasedNumberBetween(1, 6),
             'user_id' => 1,
         ];
     }

@@ -15,11 +15,6 @@ class CategoriesTableSeeder extends Seeder
     {
         //
         Category::create([
-            'name' => 'General',
-            'slug' => Str::slug('General'),
-        ]);
-
-        Category::create([
             'name' => 'Food',
             'slug' => Str::slug('Food'),
         ]);
@@ -35,11 +30,6 @@ class CategoriesTableSeeder extends Seeder
         ]);
 
         Category::create([
-            'name' => 'Other',
-            'slug' => Str::slug('Other'),
-        ]);
-
-        Category::create([
             'name' => 'Parking',
             'slug' => Str::slug('Parking'),
         ]);
@@ -47,6 +37,11 @@ class CategoriesTableSeeder extends Seeder
         Category::create([
             'name' => 'Transaction Fees',
             'slug' => Str::slug('Transaction Fees'),
+        ]);
+
+        Category::create([
+            'name' => 'General',
+            'slug' => Str::slug('General'),
         ]);
 
     }
