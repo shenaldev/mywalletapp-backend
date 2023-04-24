@@ -79,7 +79,7 @@ class IncomesController extends Controller
             return $income;
         });
 
-        return response()->json(['icome' => $results, 'errors' => false]);
+        return response()->json(['income' => $results, 'errors' => false]);
 
     }
 
@@ -105,13 +105,14 @@ class IncomesController extends Controller
     public function destroy(string $id)
     {
         //
-        $income = Income::destroy($id);
+        $income = Income::find($id);
+        $delete = Income::destroy($id);
 
-        if ($income) {
-            return response()->json(['success' => true], 200);
+        if ($delete) {
+            return response()->json(['success' => true, 'income' => $income], 200);
         }
 
-        return response()->json(['success' => false], 404);
+        return response()->json(['success' => false, 'income' => null], 404);
 
     }
 }

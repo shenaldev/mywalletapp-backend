@@ -33,7 +33,8 @@ class PaymentsController extends Controller
             ->groupBy('category.slug');
 
         //Payments Total By Category
-        $totals = Payment::select('category_id', DB::raw('SUM(payments.amount) as total'))
+        $totals = Payment::select('category_id', 'categories.slug', DB::raw('SUM(payments.amount) as total'))
+            ->join('categories', 'category_id', '=', 'categories.id')
             ->where('user_id', '=', $user)
             ->whereBetween('payments.date', [$form, $to])
             ->groupBy('category_id')
@@ -46,7 +47,6 @@ class PaymentsController extends Controller
 
         return response()->json([
             'payments' => $payments,
-            //'general' => $generalPayments,
             'totals' => $totals,
             'payments_sum' => $paymentsSum,
         ]);
@@ -91,7 +91,18 @@ class PaymentsController extends Controller
                 return response()->json(['payment' => null, 'errors' => true]);
             }
 
-            return $payment;
+            $newPayment = [
+                'id' => $payment->id,
+                'payment_for' => $payment->payment_for,
+                'amount' => $payment->amount,
+                'date' => $payment->date,
+                'category_id' => $payment->category_id,
+                'category' => [
+                    'id' => $payment->category_id,
+                ],
+            ];
+
+            return $newPayment;
         });
 
         return response()->json(['payment' => $results, 'errors' => false]);
@@ -112,12 +123,13 @@ class PaymentsController extends Controller
     public function destroy(string $id)
     {
         //
-        $payment = Payment::destroy($id);
+        $payment = Payment::find($id);
+        $isDelete = Payment::destroy($id);
 
-        if ($payment) {
-            return response()->json(['success' => true], 200);
+        if ($isDelete) {
+            return response()->json(['success' => true, 'payment' => $payment], 200);
         }
 
-        return response()->json(['success' => false], 404);
+        return response()->json(['success' => false, 'payment' => null], 404);
     }
 }
