@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('incomes', function (Blueprint $table) {
             $table->id();
             $table->string('from');
-            $table->decimal('value', 8, 2, true);
+            $table->float('value', 10, 2, true);
             $table->date('date');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
