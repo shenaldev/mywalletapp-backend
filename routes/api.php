@@ -36,10 +36,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payments/add', [PaymentsController::class, 'store']);
     Route::get('/payments/{year}/{month}', [PaymentsController::class, 'getPayments']);
     Route::delete('/payment/{id}', [PaymentsController::class, 'destroy']);
+    Route::put('/payment/{id}', [PaymentsController::class, 'update']);
 
     //Income Routes
     Route::post('/incomes/add', [IncomesController::class, 'store']);
     Route::get('/incomes/{year}/{month}', [IncomesController::class, 'getIncomes']);
     Route::delete('/income/{id}', [IncomesController::class, 'destroy']);
+    Route::put('/income/{id}', [IncomesController::class, 'update']);
 
 });

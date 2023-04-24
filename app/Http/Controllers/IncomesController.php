@@ -23,6 +23,7 @@ class IncomesController extends Controller
         $user = Auth::user()->id;
 
         $incomes = Income::select('id', 'from', 'value', 'date')
+            ->with('additionalDetails:id,details,income_id')
             ->where('user_id', '=', $user)
             ->whereBetween('date', [$form, $to])
             ->orderBy('date', 'asc')->get();
@@ -44,8 +45,6 @@ class IncomesController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        //
         $request->validate([
             'from' => 'required|string|min:3|max:200',
             'value' => 'required|numeric',
@@ -56,6 +55,7 @@ class IncomesController extends Controller
         $user_id = Auth::user()->id;
         $results = DB::transaction(function () use ($request, $user_id) {
             //Create Payment
+            $additional_details = null;
             $income = Income::create([
                 'from' => $request->from,
                 'value' => $request->value,
@@ -65,10 +65,11 @@ class IncomesController extends Controller
 
             //Create Addtional Detail If Exists
             if ($request->filled('additional_details')) {
-                IncomeAdditionalDetails::create([
+                $detals = IncomeAdditionalDetails::create([
                     'details' => $request->additional_details,
                     'income_id' => $income->id,
                 ]);
+                $additional_details = $detals;
             }
 
             // Return error if unsuccessfull
@@ -76,19 +77,18 @@ class IncomesController extends Controller
                 return response()->json(['income' => null, 'errors' => true]);
             }
 
-            return $income;
+            $newIncome = [
+                'id' => $income->id,
+                'from' => $income->from,
+                'value' => $income->value,
+                'date' => $income->date,
+                'additional_details' => $additional_details,
+            ];
+
+            return $newIncome;
         });
 
         return response()->json(['income' => $results, 'errors' => false]);
-
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
@@ -97,6 +97,55 @@ class IncomesController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $request->validate([
+            'from' => 'required|string|min:3|max:200',
+            'value' => 'required|numeric',
+            'date' => 'required|date',
+            'additional_details' => "nullable|string|max:200",
+        ]);
+
+        $income = Income::find($id);
+        $additional_details = $income->additionalDetails;
+
+        $results = DB::transaction(function () use ($request, $income, $additional_details) {
+            //Update Income
+            $income->from = $request->from;
+            $income->value = $request->value;
+            $income->date = $request->date;
+            $income->save();
+
+            //Update Additional Details If Exists
+            if ($request->filled('additional_details')) {
+                if (empty($additional_details)) {
+                    IncomeAdditionalDetails::create([
+                        'details' => $request->additional_details,
+                        'income_id' => $income->id,
+                    ]);
+                } else {
+                    $additional_details->details = $request->additional_details;
+                    $additional_details->save();
+                }
+            } else {
+                //DELETE ADDITIONAL DETAILS IF FIELD IS EMPTY AND EXISTS IN DATABASE
+
+                if (!empty($additional_details)) {
+                    $additional_details->delete();
+                }
+            }
+            // RETURN FALSE IF UNSUCCESSFULL
+            if (!$income) {
+                return false;
+            }
+            return true;
+        });
+
+        if (!$results) {
+            return response()->json(['income' => null, 'errors' => true]);
+        }
+
+        $newIncomeData = Income::find($id);
+        $newIncomeData->additionalDetails;
+        return response()->json(['income' => $newIncomeData, 'errors' => false]);
     }
 
     /**

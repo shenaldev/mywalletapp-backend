@@ -26,6 +26,7 @@ class PaymentsController extends Controller
         // Get All Payments by Category
         $payments = Payment::select('id', 'payment_for', 'amount', 'date', 'category_id')
             ->with('category:id,slug')
+            ->with('additionalDetails:id,details,payment_id')
             ->where('user_id', '=', $user)
             ->whereBetween('date', [$form, $to])
             ->orderBy('date', 'asc')
@@ -70,6 +71,7 @@ class PaymentsController extends Controller
         $user_id = Auth::user()->id;
         $results = DB::transaction(function () use ($request, $user_id) {
             //Create Payment
+            $additionalDetails = null;
             $payment = Payment::create([
                 'payment_for' => $request->payment_for,
                 'amount' => $request->cost,
@@ -80,10 +82,11 @@ class PaymentsController extends Controller
 
             //Create Addtional Detail If Exists
             if ($request->filled('additional_details')) {
-                PaymentAdditionalDetail::create([
+                $details = PaymentAdditionalDetail::create([
                     'details' => $request->additional_details,
                     'payment_id' => $payment->id,
                 ]);
+                $additionalDetails = $details;
             }
 
             // Return error if unsuccessfull
@@ -100,6 +103,7 @@ class PaymentsController extends Controller
                 'category' => [
                     'id' => $payment->category_id,
                 ],
+                "addidtional_details" => $additionalDetails,
             ];
 
             return $newPayment;
@@ -115,6 +119,57 @@ class PaymentsController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $request->validate([
+            'payment_for' => 'required|string|min:3|max:200',
+            'cost' => 'required|numeric',
+            'date' => 'required|date',
+            'category' => 'required',
+            'additional_details' => "nullable|string|max:200",
+        ]);
+
+        $payment = Payment::find($id);
+        $additionalDetails = $payment->additionalDetails;
+
+        $results = DB::transaction(function () use ($request, $payment, $additionalDetails) {
+            //UPDATE PAYMENT
+            $payment->payment_for = $request->payment_for;
+            $payment->amount = $request->cost;
+            $payment->date = date($request->date);
+            $payment->category_id = $request->category;
+            $payment->save();
+
+            //UPDATE ADDITIONAL DETAILS IF EXISTS
+            if ($request->filled('additional_details')) {
+                if (empty($additionalDetails)) {
+                    PaymentAdditionalDetail::create([
+                        'details' => $request->additional_details,
+                        'payment_id' => $payment->id,
+                    ]);
+                } else {
+                    $additionalDetails->details = $request->additional_details;
+                    $additionalDetails->save();
+                }
+            } else {
+                //DELETE ADDITIONAL DETAILS IF FIELD IS EMPTY AND EXISTS IN DATABASE
+                if (!empty($additionalDetails)) {
+                    $additionalDetails->delete();
+                }
+            }
+
+            // RETUNN FALSE IF UNSUCCESSFULL
+            if (!$payment) {
+                return false;
+            }
+            return true;
+        });
+
+        if (!$results) {
+            return response()->json(['payment' => null, 'errors' => true]);
+        }
+
+        $newPayment = Payment::find($id);
+        $newPayment->additionalDetails;
+        return response()->json(['payment' => $newPayment, 'errors' => false]);
     }
 
     /**
