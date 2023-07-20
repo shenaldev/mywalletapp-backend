@@ -59,7 +59,7 @@ class EmailVerificationController extends Controller
     {
         $request->validate([
             'email' => 'required|email|string',
-            'code' => 'required|string',
+            'code' => 'required|',
         ]);
 
         $email = $request->email;

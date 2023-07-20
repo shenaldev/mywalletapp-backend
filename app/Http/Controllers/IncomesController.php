@@ -55,7 +55,6 @@ class IncomesController extends Controller
         $user_id = Auth::user()->id;
         $results = DB::transaction(function () use ($request, $user_id) {
             //Create Payment
-            $additional_details = null;
             $income = Income::create([
                 'from' => $request->from,
                 'value' => $request->value,
@@ -65,11 +64,12 @@ class IncomesController extends Controller
 
             //Create Addtional Detail If Exists
             if ($request->filled('additional_details')) {
-                $detals = IncomeAdditionalDetails::create([
+                $additional_details = IncomeAdditionalDetails::create([
                     'details' => $request->additional_details,
                     'income_id' => $income->id,
                 ]);
-                $additional_details = $detals;
+            } else {
+                $additional_details = null;
             }
 
             // Return error if unsuccessfull

@@ -103,7 +103,7 @@ class PaymentsController extends Controller
                 'category' => [
                     'id' => $payment->category_id,
                 ],
-                "addidtional_details" => $additionalDetails,
+                "additional_details" => $additionalDetails,
             ];
 
             return $newPayment;
