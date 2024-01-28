@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\IncomesController;
 use App\Http\Controllers\PaymentsController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/income/{id}', [IncomesController::class, 'destroy']);
     Route::put('/income/{id}', [IncomesController::class, 'update']);
 
+    //REPORT ROUTE
+    Route::get('/report/{year}', [ReportController::class, 'generate']);
 });
