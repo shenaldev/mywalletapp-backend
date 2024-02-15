@@ -10,11 +10,16 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'icon'
+        'name', 'slug', 'icon', 'primary'
     ];
 
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function userCategories()
+    {
+        return $this->hasMany(UserCategory::class);
     }
 }
