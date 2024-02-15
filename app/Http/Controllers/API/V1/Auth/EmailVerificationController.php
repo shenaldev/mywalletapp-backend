@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\EmailVerificationMail;
@@ -21,7 +21,7 @@ class EmailVerificationController extends Controller
      * Send Verification Email Code
      * @param Request $request
      */
-    public function sendVerificationCode(Request $request)
+    public function send(Request $request)
     {
         $request->validate([
             'email' => 'email|required|string|unique:users,email',
@@ -48,14 +48,13 @@ class EmailVerificationController extends Controller
         } catch (Exception $error) {
             return response()->json(['error' => true, 'isSuccess' => false], 500);
         }
-
     }
 
     /**
      * Validate user input code with database code
      * @param Request $request
      */
-    public function validateCode(Request $request)
+    public function verify(Request $request)
     {
         $request->validate([
             'email' => 'required|email|string',
@@ -73,6 +72,6 @@ class EmailVerificationController extends Controller
             }
         }
 
-        return response()->json(['valid' => false, 'message' => 'Invalid Code'], 203);
+        return response()->json(['valid' => false, 'message' => 'Invalid Code'], 400);
     }
 }

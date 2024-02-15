@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\API\V1\Auth\AuthController;
+use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\IncomesController;
 use App\Http\Controllers\PaymentsController;
@@ -20,12 +20,20 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/email/send-verification', [EmailVerificationController::class, 'sendVerificationCode']);
-Route::post('/email/verify', [EmailVerificationController::class, 'validateCode']);
+//PUBLIC COMMON ROUTES
+Route::post("/remove-cookies", [AuthController::class, 'removeCookies']);
 
-Route::middleware('auth:sanctum')->group(function () {
+//GUEST ROUTES FOR AUTHENTICATION
+Route::prefix("v1")->middleware("guest")->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    //EMAIL VARIFY
+    Route::post('/email-verification', [EmailVerificationController::class, 'send']);
+    Route::post('/email-verify', [EmailVerificationController::class, 'verify']);
+});
+
+//AUTHENTICATED ROUTES
+Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/categories', [CategoriesController::class, 'index']);

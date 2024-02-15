@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     protected $COOKIE_EXPIRE_TIME = 1 * (60 * 24 * 7);
-    protected $AUTH_COOKIE_NAME = '_token';
+    protected $AUTH_COOKIE_NAME = 'mywallet_token';
     /**
      * Login Function
      */
@@ -30,12 +31,13 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('authToken')->plainTextToken;
+        $encToken = Crypt::encryptString($token);
         $response = [
             'user' => $user,
-            'token' => $token,
+            'token' => $encToken,
         ];
 
-        $cookie = Cookie::make($this->AUTH_COOKIE_NAME, $token, $this->COOKIE_EXPIRE_TIME);
+        $cookie = Cookie::make($this->AUTH_COOKIE_NAME, $encToken, $this->COOKIE_EXPIRE_TIME);
 
         return response()->json($response, 201)->withCookie($cookie);
     }
@@ -69,14 +71,14 @@ class AuthController extends Controller
         });
 
         $token = $result->createToken('authToken')->plainTextToken;
+        $encToken = Crypt::encryptString($token);
         $response = [
             'user' => $result,
         ];
 
-        $cookie = cookie($this->AUTH_COOKIE_NAME, $token, $this->COOKIE_EXPIRE_TIME);
+        $cookie = cookie($this->AUTH_COOKIE_NAME, $encToken, $this->COOKIE_EXPIRE_TIME);
 
         return response()->json($response, 201)->withCookie($cookie);
-
     }
 
     /**
@@ -98,5 +100,14 @@ class AuthController extends Controller
     public function checkToken()
     {
         return response()->json('true', 200);
+    }
+
+    /**
+     * Remove Cookies From Browser When User Token Has Expired
+     */
+    public function removeCookies()
+    {
+        $tokenCookie = Cookie::forget($this->AUTH_COOKIE_NAME);
+        return response()->json(['success' => true], 200)->withCookie($tokenCookie);
     }
 }
