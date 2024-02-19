@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\V1\Auth\AuthController;
 use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Admin\CategoriesController;
+use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
 use App\Http\Controllers\IncomesController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\ReportController;
@@ -37,8 +38,17 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    //User Routes
-    Route::get('/user/register-year', [UserController::class, 'getRegisterYear']);
+    //USER ROUTES
+    Route::prefix('user')->group(function () {
+        //User Category Routes
+        Route::get('/categories', [UserCategoriesController::class, 'index']);
+        Route::post('/categories', [UserCategoriesController::class, 'store']);
+        Route::put('/categories/{id}', [UserCategoriesController::class, 'update']);
+        Route::delete('/categories/{id}', [UserCategoriesController::class, 'destroy']);
+
+        //User Routes
+        Route::get('/register-year', [UserController::class, 'getRegisterYear']);
+    });
 
     //Payment Routes
     Route::post('/payments/add', [PaymentsController::class, 'store']);
