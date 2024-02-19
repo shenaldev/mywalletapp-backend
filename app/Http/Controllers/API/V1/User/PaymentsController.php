@@ -94,9 +94,9 @@ class PaymentsController extends Controller
             ]);
 
             //Create Payment Note If Exists
-            $details = null;
+            $note = null;
             if ($request->filled('note')) {
-                $details = PaymentNote::create([
+                $note = PaymentNote::create([
                     'note' => $request->note,
                     'payment_id' => $payment->id,
                 ]);
@@ -106,7 +106,7 @@ class PaymentsController extends Controller
                 return response()->json(['message' => 'Payment not created'], 500);
             }
 
-            return ['payment' => $payment, 'details' => $details];
+            return ['payment' => $payment, 'note' => $note];
         });
 
         return response()->json($results, 201);

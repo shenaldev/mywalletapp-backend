@@ -4,7 +4,7 @@ use App\Http\Controllers\API\V1\Auth\AuthController;
 use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Admin\CategoriesController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
-use App\Http\Controllers\IncomesController;
+use App\Http\Controllers\API\V1\User\IncomesController;
 use App\Http\Controllers\API\V1\User\PaymentsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
@@ -54,13 +54,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/payments', [PaymentsController::class, 'store']);
         Route::put('/payments/{id}', [PaymentsController::class, 'update']);
         Route::delete('/payments/{id}', [PaymentsController::class, 'destroy']);
-    });
 
-    //Income Routes
-    Route::post('/incomes/add', [IncomesController::class, 'store']);
-    Route::get('/incomes/{year}/{month}', [IncomesController::class, 'getIncomes']);
-    Route::delete('/income/{id}', [IncomesController::class, 'destroy']);
-    Route::put('/income/{id}', [IncomesController::class, 'update']);
+        //Income Routes
+        Route::get('/incomes/{year}/{month}', [IncomesController::class, 'index']);
+        Route::post('/incomes', [IncomesController::class, 'store']);
+        Route::put('/incomes/{id}', [IncomesController::class, 'update']);
+        Route::delete('/incomes/{id}', [IncomesController::class, 'destroy']);
+    });
 
     //REPORT ROUTE
     Route::get('/report/{year}', [ReportController::class, 'generate']);
