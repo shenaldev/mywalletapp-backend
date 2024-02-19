@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\V1\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
@@ -126,6 +127,10 @@ class PaymentsController extends Controller
             'note' => "nullable|string|max:200",
         ]);
 
+        if (!$this->isPaymentBelongsToUser($id, Auth::user()->id)) {
+            return response()->json(['message' => 'Unathorized'], 401);
+        }
+
         $payment = Payment::find($id);
         $paymentNote = $payment->paymentNote;
 
@@ -181,6 +186,10 @@ class PaymentsController extends Controller
             return response()->json(['message' => 'Payment not found'], 404);
         }
 
+        if (!$this->isPaymentBelongsToUser($id, Auth::user()->id)) {
+            return response()->json(['message' => 'Unathorized'], 401);
+        }
+
         $payment = Payment::find($id);
         $paymentNote = $payment->paymentNote;
 
@@ -214,5 +223,13 @@ class PaymentsController extends Controller
     private function isPaymentMethodExist($id)
     {
         return PaymentMethod::where('id', $id)->exists();
+    }
+
+    /**
+     * Check if payment belongs to user
+     */
+    private function isPaymentBelongsToUser($id, $userID)
+    {
+        return Payment::where('id', $id)->where('user_id', $userID)->exists();
     }
 }
