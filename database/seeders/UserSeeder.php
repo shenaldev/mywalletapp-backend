@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@mywalletcash.com',
             'password' => Hash::make('45asc%P232uDG48'),
+            'is_admin' => true,
         ]);
 
         User::create([
