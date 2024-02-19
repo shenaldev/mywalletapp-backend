@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Payment;
-use App\Models\PaymentAdditionalDetail;
+use App\Models\PaymentMethod;
+use App\Models\PaymentNote;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +54,6 @@ class PaymentsController extends Controller
             'totals' => $totals,
             'payments_sum' => $paymentsSum,
         ]);
-
     }
 
     /**
@@ -59,58 +61,54 @@ class PaymentsController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $request->validate([
-            'payment_for' => 'required|string|min:3|max:200',
-            'cost' => 'required|numeric',
+            'name' => 'required|string|min:3|max:200',
+            'amount' => 'required|numeric',
             'date' => 'required|date',
-            'category' => 'required',
-            'additional_details' => "nullable|string|max:200",
+            'currency' => 'required|string|max:3',
+            'category_id' => 'required',
+            'payment_method_id' => 'required',
+            'note' => "nullable|string|max:200",
         ]);
 
-        $user_id = Auth::user()->id;
-        $results = DB::transaction(function () use ($request, $user_id) {
+        $userID = $request->user()->id;
+
+        if (!$this->isCategoryExist($request->category_id)) {
+            return response()->json(['message' => 'Category does not exist'], 400);
+        }
+
+        if (!$this->isPaymentMethodExist($request->payment_method_id)) {
+            return response()->json(['message' => 'Payment Method does not exist'], 400);
+        }
+
+        $results = DB::transaction(function () use ($request, $userID) {
             //Create Payment
-            $additionalDetails = null;
             $payment = Payment::create([
-                'payment_for' => $request->payment_for,
-                'amount' => $request->cost,
+                'name' => $request->name,
+                'amount' => $request->amount,
                 'date' => date($request->date),
-                'category_id' => $request->category,
-                'user_id' => $user_id,
+                'category_id' => $request->category_id,
+                'payment_method_id' => $request->payment_method_id,
+                'user_id' => $userID,
             ]);
 
-            //Create Addtional Detail If Exists
-            if ($request->filled('additional_details')) {
-                $details = PaymentAdditionalDetail::create([
-                    'details' => $request->additional_details,
+            //Create Payment Note If Exists
+            $details = null;
+            if ($request->filled('note')) {
+                $details = PaymentNote::create([
+                    'note' => $request->note,
                     'payment_id' => $payment->id,
                 ]);
-                $additionalDetails = $details;
             }
 
-            // Return error if unsuccessfull
             if (!$payment) {
-                return response()->json(['payment' => null, 'errors' => true]);
+                return response()->json(['message' => 'Payment not created'], 500);
             }
 
-            $newPayment = [
-                'id' => $payment->id,
-                'payment_for' => $payment->payment_for,
-                'amount' => $payment->amount,
-                'date' => $payment->date,
-                'category_id' => $payment->category_id,
-                'category' => [
-                    'id' => $payment->category_id,
-                ],
-                "additional_details" => $additionalDetails,
-            ];
-
-            return $newPayment;
+            return ['payment' => $payment, 'details' => $details];
         });
 
-        return response()->json(['payment' => $results, 'errors' => false]);
-
+        return response()->json($results, 201);
     }
 
     /**
@@ -118,58 +116,60 @@ class PaymentsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
         $request->validate([
-            'payment_for' => 'required|string|min:3|max:200',
-            'cost' => 'required|numeric',
+            'name' => 'required|string|min:3|max:200',
+            'amount' => 'required|numeric',
             'date' => 'required|date',
-            'category' => 'required',
-            'additional_details' => "nullable|string|max:200",
+            'currency' => 'required|string|max:3',
+            'category_id' => 'required',
+            'payment_method_id' => 'required',
+            'note' => "nullable|string|max:200",
         ]);
 
         $payment = Payment::find($id);
-        $additionalDetails = $payment->additionalDetails;
+        $paymentNote = $payment->paymentNote;
 
-        $results = DB::transaction(function () use ($request, $payment, $additionalDetails) {
+        $results = DB::transaction(function () use ($request, $payment, $paymentNote) {
             //UPDATE PAYMENT
-            $payment->payment_for = $request->payment_for;
-            $payment->amount = $request->cost;
+            $payment->name = $request->name;
+            $payment->amount = $request->amount;
             $payment->date = date($request->date);
-            $payment->category_id = $request->category;
+            $payment->currency = $request->currency;
+            $payment->category_id = $request->category_id;
+            $payment->payment_method_id = $request->payment_method_id;
             $payment->save();
 
-            //UPDATE ADDITIONAL DETAILS IF EXISTS
-            if ($request->filled('additional_details')) {
-                if (empty($additionalDetails)) {
-                    PaymentAdditionalDetail::create([
-                        'details' => $request->additional_details,
+            //CREATE OR UPDATE PAYMENT NOTE
+            if ($request->filled('note')) {
+                if (empty($paymentNote)) {
+                    PaymentNote::create([
+                        'note' => $request->note,
                         'payment_id' => $payment->id,
                     ]);
                 } else {
-                    $additionalDetails->details = $request->additional_details;
-                    $additionalDetails->save();
+                    $paymentNote->note = $request->note;
+                    $paymentNote->save();
                 }
             } else {
-                //DELETE ADDITIONAL DETAILS IF FIELD IS EMPTY AND EXISTS IN DATABASE
-                if (!empty($additionalDetails)) {
-                    $additionalDetails->delete();
+                if (!empty($paymentNote)) {
+                    try {
+                        $paymentNote->delete();
+                    } catch (Exception $e) {
+                        return;
+                    }
                 }
             }
 
-            // RETUNN FALSE IF UNSUCCESSFULL
-            if (!$payment) {
-                return false;
-            }
-            return true;
+            return $payment;
         });
 
         if (!$results) {
-            return response()->json(['payment' => null, 'errors' => true]);
+            return response()->json(['message' => 'Payment not updated'], 500);
         }
 
         $newPayment = Payment::find($id);
-        $newPayment->additionalDetails;
-        return response()->json(['payment' => $newPayment, 'errors' => false]);
+        $newPayment->paymentNote;
+        return response()->json($newPayment, 200);
     }
 
     /**
@@ -177,14 +177,42 @@ class PaymentsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
-        $payment = Payment::find($id);
-        $isDelete = Payment::destroy($id);
-
-        if ($isDelete) {
-            return response()->json(['success' => true, 'payment' => $payment], 200);
+        if (Payment::find($id) === null) {
+            return response()->json(['message' => 'Payment not found'], 404);
         }
 
-        return response()->json(['success' => false, 'payment' => null], 404);
+        $payment = Payment::find($id);
+        $paymentNote = $payment->paymentNote;
+
+        $results = DB::transaction(function () use ($payment, $paymentNote) {
+            if ($paymentNote) {
+                $paymentNote->delete();
+            }
+
+            $payment->delete();
+            return $payment;
+        });
+
+        if (!$results) {
+            return response()->json(['message' => 'Payment not deleted'], 500);
+        }
+
+        return response()->json(['message' => 'Payment deleted'], 200);
+    }
+
+    /**
+     * Check if category exists
+     */
+    private function isCategoryExist($id)
+    {
+        return Category::where('id', $id)->exists();
+    }
+
+    /**
+     * Check if payment method exists
+     */
+    private function isPaymentMethodExist($id)
+    {
+        return PaymentMethod::where('id', $id)->exists();
     }
 }

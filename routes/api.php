@@ -48,13 +48,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         //User Routes
         Route::get('/register-year', [UserController::class, 'getRegisterYear']);
-    });
 
-    //Payment Routes
-    Route::post('/payments/add', [PaymentsController::class, 'store']);
-    Route::get('/payments/{year}/{month}', [PaymentsController::class, 'getPayments']);
-    Route::delete('/payment/{id}', [PaymentsController::class, 'destroy']);
-    Route::put('/payment/{id}', [PaymentsController::class, 'update']);
+        //Payment Routes
+        Route::get('/payments/{year}/{month}', [PaymentsController::class, 'getPayments']);
+        Route::post('/payments', [PaymentsController::class, 'store']);
+        Route::put('/payments/{id}', [PaymentsController::class, 'update']);
+        Route::delete('/payments/{id}', [PaymentsController::class, 'destroy']);
+    });
 
     //Income Routes
     Route::post('/incomes/add', [IncomesController::class, 'store']);

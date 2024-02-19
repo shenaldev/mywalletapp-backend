@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payment_notes', function (Blueprint $table) {
             $table->id();
-            $table->string('details');
+            $table->string('note');
             $table->bigInteger('payment_id')->unsigned();
             $table->foreign('payment_id')->on('payments')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

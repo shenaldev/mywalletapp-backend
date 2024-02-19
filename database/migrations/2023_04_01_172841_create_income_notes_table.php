@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('income_notes', function (Blueprint $table) {
             $table->id();
-            $table->string('details');
+            $table->string('note');
             $table->bigInteger('income_id')->unsigned();
             $table->foreign('income_id')->on('incomes')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
