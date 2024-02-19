@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\API\V1\Auth\AuthController;
 use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
-use App\Http\Controllers\API\V1\Common\CategoriesController;
+use App\Http\Controllers\API\V1\Admin\CategoriesController;
 use App\Http\Controllers\IncomesController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\ReportController;
@@ -37,12 +37,6 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    //CATEGORY ROUTES
-    Route::get('/categories', [CategoriesController::class, 'index']);
-    Route::post('/categories', [CategoriesController::class, 'store']);
-    Route::put('/categories/{id}', [CategoriesController::class, 'update']);
-    Route::delete('/categories/{id}', [CategoriesController::class, 'destroy']);
-
     //User Routes
     Route::get('/user/register-year', [UserController::class, 'getRegisterYear']);
 
@@ -60,4 +54,15 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
     //REPORT ROUTE
     Route::get('/report/{year}', [ReportController::class, 'generate']);
+
+    /**
+     * ADMIN DASHBOARD ROUTES
+     */
+    Route::prefix('admin')->middleware('admin')->group(function () {
+        //CATEGORY ROUTES
+        Route::get('/categories', [CategoriesController::class, 'index']);
+        Route::post('/categories', [CategoriesController::class, 'store']);
+        Route::put('/categories/{id}', [CategoriesController::class, 'update']);
+        Route::delete('/categories/{id}', [CategoriesController::class, 'destroy']);
+    });
 });

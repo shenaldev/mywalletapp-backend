@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\V1\Common;
+namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
@@ -25,7 +25,8 @@ class CategoriesController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:200|unique:categories',
-            'icon' => 'nullable|string|max:200'
+            'icon' => 'nullable|string|max:200',
+            'primary' => 'nullable|boolean'
         ]);
 
         $slug = Str::slug($request->name);
@@ -38,7 +39,8 @@ class CategoriesController extends Controller
         $category = Category::create([
             'name' => $request->name,
             'slug' => $slug,
-            'icon' => $request->icon ? $request->icon : null
+            'icon' => $request->icon ? $request->icon : null,
+            'primary' => $request->primary ? $request->primary : false
         ]);
 
         return response()->json($category, 201);
@@ -51,7 +53,8 @@ class CategoriesController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:200',
-            'icon' => 'nullable|string|max:200'
+            'icon' => 'nullable|string|max:200',
+            'primary' => 'nullable|boolean'
         ]);
 
         if (!Category::find($id)) {
@@ -68,6 +71,7 @@ class CategoriesController extends Controller
         $category->name = $request->name;
         $category->slug = $slug;
         $category->icon = $request->icon ? $request->icon : null;
+        $category->primary = $request->primary ? $request->primary : false;
         $category->save();
 
         return response()->json($category, 200);
