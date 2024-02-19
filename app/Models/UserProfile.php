@@ -5,16 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PaymentAdditionalDetail extends Model
+class UserProfile extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'details', 'payment_id',
+        'avatar',
+        'default_currency',
+        'user_id',
     ];
 
-    public function payment()
+    public function user()
     {
-        return $this->belongsTo(Payment::class);
+        return $this->belongsTo(User::class);
     }
 }

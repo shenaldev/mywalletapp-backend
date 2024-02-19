@@ -55,6 +55,11 @@ class User extends Authenticatable
 
     public function userCategories()
     {
-        return $this->belongsToMany(Category::class)->using(UserCategory::class);
+        return $this->belongsToMany(Category::class);
+    }
+
+    public function userProfile()
+    {
+        return $this->hasOne(UserProfile::class);
     }
 }
