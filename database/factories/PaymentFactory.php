@@ -18,10 +18,11 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'payment_for' => fake()->realText(20),
+            'name' => fake()->realText(20),
             'amount' => fake()->biasedNumberBetween(100, 5000),
             'date' => fake()->dateTimeThisMonth('now'),
             'category_id' => fake()->biasedNumberBetween(1, 6),
+            'payment_method_id' => fake()->biasedNumberBetween(1, 3),
             'user_id' => 1,
         ];
     }

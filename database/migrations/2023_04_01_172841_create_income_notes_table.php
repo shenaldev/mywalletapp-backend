@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_additional_details', function (Blueprint $table) {
+        Schema::create('income_notes', function (Blueprint $table) {
             $table->id();
             $table->string('details');
-            $table->bigInteger('payment_id')->unsigned();
-            $table->foreign('payment_id')->on('payments')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('income_id')->unsigned();
+            $table->foreign('income_id')->on('incomes')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_additional_details');
+        Schema::dropIfExists('income_notes');
     }
 };
