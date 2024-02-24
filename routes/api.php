@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\V1\Auth\AuthController;
 use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Admin\CategoriesController;
+use App\Http\Controllers\API\V1\Common\PaymentMethodsController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
 use App\Http\Controllers\API\V1\User\IncomesController;
 use App\Http\Controllers\API\V1\User\PaymentsController;
@@ -37,6 +38,7 @@ Route::prefix("v1")->middleware("guest")->group(function () {
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/payment-methods', [PaymentMethodsController::class, 'index']);
 
     //USER ROUTES
     Route::prefix('user')->group(function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ErrorResponse;
 use App\Mail\EmailVerificationMail;
 use App\Models\EmailVerification;
 use Exception;
@@ -58,7 +59,7 @@ class EmailVerificationController extends Controller
     {
         $request->validate([
             'email' => 'required|email|string',
-            'code' => 'required|',
+            'code' => 'required',
         ]);
 
         $email = $request->email;
@@ -72,6 +73,9 @@ class EmailVerificationController extends Controller
             }
         }
 
-        return response()->json(['valid' => false, 'message' => 'Invalid Code'], 400);
+        $errorBag = ErrorResponse::errorList([
+            'code' => 'Invalid Code',
+        ]);
+        return response()->json($errorBag, 422);
     }
 }
