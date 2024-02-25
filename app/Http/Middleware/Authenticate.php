@@ -28,6 +28,10 @@ class Authenticate extends Middleware
         $token = $request->cookie(env("AUTH_TOKEN_NAME"));
         $decToken = false;
 
+        if ($token == null || "" || empty($token)) {
+            return response()->json(["message" => "Unauthenticated.", "token" => false], 401);
+        }
+
         try {
             $decToken = Crypt::decryptString($token);
         } catch (DecryptException $e) {

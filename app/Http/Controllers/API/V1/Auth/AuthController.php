@@ -97,9 +97,12 @@ class AuthController extends Controller
     /**
      * Check Token Is Expired
      */
-    public function checkToken()
+    public function checkToken(Request $request)
     {
-        return response()->json('true', 200);
+        if ($request->user()) {
+            return response()->json(['token' => true], 200);
+        }
+        return response()->json(["message" => "Unauthenticated.", "token" => false], 401);
     }
 
     /**
