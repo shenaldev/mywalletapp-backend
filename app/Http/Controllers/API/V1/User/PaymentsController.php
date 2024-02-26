@@ -15,49 +15,6 @@ use Illuminate\Support\Facades\DB;
 class PaymentsController extends Controller
 {
     /**
-     * Get user payments for specific date range
-     */
-    public function getPayments(Request $request)
-    {
-        //
-        $year = $request->year;
-        $month = $request->month;
-        $endDay = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        $form = date($year . '-' . $month . '-01');
-        $to = date($year . '-' . $month . '-' . $endDay);
-        $user = Auth::user()->id;
-
-        // Get All Payments by Category
-        $payments = Payment::select('id', 'payment_for', 'amount', 'date', 'category_id')
-            ->with('category:id,slug')
-            ->with('additionalDetails:id,details,payment_id')
-            ->where('user_id', '=', $user)
-            ->whereBetween('date', [$form, $to])
-            ->orderBy('date', 'asc')
-            ->get()
-            ->groupBy('category.slug');
-
-        //Payments Total By Category
-        $totals = Payment::select('category_id', 'categories.slug', DB::raw('SUM(payments.amount) as total'))
-            ->join('categories', 'category_id', '=', 'categories.id')
-            ->where('user_id', '=', $user)
-            ->whereBetween('payments.date', [$form, $to])
-            ->groupBy('category_id')
-            ->get();
-
-        // GET TOTAL SUM OF ALL PAYMENTS
-        $paymentsSum = Payment::where('user_id', '=', $user)
-            ->whereBetween('date', [$form, $to])
-            ->sum('amount');
-
-        return response()->json([
-            'payments' => $payments,
-            'totals' => $totals,
-            'payments_sum' => $paymentsSum,
-        ]);
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

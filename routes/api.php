@@ -5,6 +5,7 @@ use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Admin\CategoriesController;
 use App\Http\Controllers\API\V1\Common\PaymentMethodsController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
+use App\Http\Controllers\API\V1\User\GetPaymentsController;
 use App\Http\Controllers\API\V1\User\IncomesController;
 use App\Http\Controllers\API\V1\User\PaymentsController;
 use App\Http\Controllers\ReportController;
@@ -52,7 +53,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/register-year', [UserController::class, 'getRegisterYear']);
 
         //Payment Routes
-        Route::get('/payments/{year}/{month}', [PaymentsController::class, 'getPayments']);
+        Route::get('/payments/{year}/{month}', [GetPaymentsController::class, 'getPayments']);
         Route::post('/payments', [PaymentsController::class, 'store']);
         Route::put('/payments/{id}', [PaymentsController::class, 'update']);
         Route::delete('/payments/{id}', [PaymentsController::class, 'destroy']);
