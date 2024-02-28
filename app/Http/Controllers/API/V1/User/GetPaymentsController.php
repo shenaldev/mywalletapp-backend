@@ -40,10 +40,8 @@ class GetPaymentsController extends Controller
             ->whereBetween('date', [$from, $to])
             ->sum('amount');
 
-        $mappedPayments->push(['total' => $monthlyTotal]);
 
-
-        return response()->json($mappedPayments);
+        return response()->json(["payments" => $mappedPayments, "total" => $monthlyTotal]);
     }
 
     /**
