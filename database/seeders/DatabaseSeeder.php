@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             CategoriesTableSeeder::class,
             PaymentMethodsTableSeeder::class,
             PaymentsTableSeeder::class,
+            IncomesTableSeeder::class,
         ]);
     }
 }
