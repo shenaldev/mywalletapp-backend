@@ -7,9 +7,12 @@ use App\Models\Category;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\PaymentNote;
+use Carbon\Carbon;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 class PaymentsController extends Controller
@@ -39,12 +42,14 @@ class PaymentsController extends Controller
             return response()->json(['message' => 'Payment Method does not exist'], 400);
         }
 
+
         $results = DB::transaction(function () use ($request, $userID) {
+            $date = Carbon::parse($request->date)->format('Y-m-d');
             //Create Payment
             $payment = Payment::create([
                 'name' => $request->name,
                 'amount' => $request->amount,
-                'date' => date($request->date),
+                'date' => $date,
                 'category_id' => $request->category_id,
                 'payment_method_id' => $request->payment_method_id,
                 'user_id' => $userID,
@@ -92,10 +97,11 @@ class PaymentsController extends Controller
         $paymentNote = $payment->paymentNote;
 
         $results = DB::transaction(function () use ($request, $payment, $paymentNote) {
+            $date = Carbon::parse($request->date)->format('Y-m-d');
             //UPDATE PAYMENT
             $payment->name = $request->name;
             $payment->amount = $request->amount;
-            $payment->date = date($request->date);
+            $payment->date = $date;
             $payment->currency = $request->currency;
             $payment->category_id = $request->category_id;
             $payment->payment_method_id = $request->payment_method_id;
