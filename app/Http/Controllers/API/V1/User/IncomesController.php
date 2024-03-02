@@ -14,7 +14,7 @@ class IncomesController extends Controller
     /**
      * Get user incomes for specific date range
      */
-    public function getIncomes(Request $request)
+    public function index(Request $request)
     {
         $year = $request->year;
         $month = $request->month;
@@ -23,20 +23,18 @@ class IncomesController extends Controller
         $to = date($year . '-' . $month . '-' . $endDay);
         $user = Auth::user()->id;
 
-        $incomes = Income::select('id', 'from', 'value', 'date')
-            ->with('additionalDetails:id,details,income_id')
-            ->where('user_id', '=', $user)
+        $incomes = Income::where('user_id', '=', $user)
             ->whereBetween('date', [$form, $to])
             ->orderBy('date', 'asc')->get();
 
         //GET TOOTAL SUM OF ALL INCOMES
         $incomesSum = Income::where('user_id', '=', $user)
             ->whereBetween('date', [$form, $to])
-            ->sum('value');
+            ->sum('amount');
 
         return response()->json([
             'incomes' => $incomes,
-            'incomes_sum' => $incomesSum,
+            'total' => $incomesSum,
         ]);
     }
 
