@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\Controller;
 use App\Models\Income;
 use App\Models\IncomeNote;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -54,11 +55,12 @@ class IncomesController extends Controller
 
         $userID = $request->user()->id;
         $results = DB::transaction(function () use ($request, $userID) {
+            $date = Carbon::parse($request->date)->format('Y-m-d');
             //Create Payment
             $income = Income::create([
                 'source' => $request->source,
                 'amount' => $request->amount,
-                'date' => date($request->date),
+                'date' => $date,
                 'currency' => Str::upper($request->currency),
                 'user_id' => $userID,
             ]);
@@ -99,10 +101,11 @@ class IncomesController extends Controller
         $note = $income->incomeNote;
 
         $results = DB::transaction(function () use ($request, $income, $note) {
+            $date = Carbon::parse($request->date)->format('Y-m-d');
             //Update Income
             $income->source = $request->source;
             $income->amount = $request->amount;
-            $income->date = $request->date;
+            $income->date = $date;
             $income->currency = Str::upper($request->currency);
             $income->save();
 
