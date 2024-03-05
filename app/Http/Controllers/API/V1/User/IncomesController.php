@@ -8,6 +8,7 @@ use App\Models\IncomeNote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class IncomesController extends Controller
 {
@@ -58,7 +59,7 @@ class IncomesController extends Controller
                 'source' => $request->source,
                 'amount' => $request->amount,
                 'date' => date($request->date),
-                'currency' => $request->currency,
+                'currency' => Str::upper($request->currency),
                 'user_id' => $userID,
             ]);
 
@@ -102,7 +103,7 @@ class IncomesController extends Controller
             $income->source = $request->source;
             $income->amount = $request->amount;
             $income->date = $request->date;
-            $income->currency = $request->currency;
+            $income->currency = Str::upper($request->currency);
             $income->save();
 
             //Update Income Note If Exists

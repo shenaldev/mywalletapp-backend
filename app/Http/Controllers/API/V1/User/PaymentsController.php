@@ -8,12 +8,11 @@ use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\PaymentNote;
 use Carbon\Carbon;
-use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PaymentsController extends Controller
 {
@@ -50,6 +49,7 @@ class PaymentsController extends Controller
                 'name' => $request->name,
                 'amount' => $request->amount,
                 'date' => $date,
+                'currency' => Str::upper($request->currency),
                 'category_id' => $request->category_id,
                 'payment_method_id' => $request->payment_method_id,
                 'user_id' => $userID,
@@ -102,7 +102,7 @@ class PaymentsController extends Controller
             $payment->name = $request->name;
             $payment->amount = $request->amount;
             $payment->date = $date;
-            $payment->currency = $request->currency;
+            $payment->currency = Str::upper($request->currency);
             $payment->category_id = $request->category_id;
             $payment->payment_method_id = $request->payment_method_id;
             $payment->save();
