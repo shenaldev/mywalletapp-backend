@@ -18,7 +18,7 @@ class Income extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function incomeNote()
+    public function income_note()
     {
         return $this->hasOne(IncomeNote::class);
     }

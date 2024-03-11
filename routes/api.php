@@ -60,6 +60,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::delete('/payments/{id}', [PaymentsController::class, 'destroy']);
 
         //Income Routes
+        Route::get('/incomes/{id}', [IncomesController::class, 'getIncomeNote']);
         Route::get('/incomes/{year}/{month}', [IncomesController::class, 'index']);
         Route::post('/incomes', [IncomesController::class, 'store']);
         Route::put('/incomes/{id}', [IncomesController::class, 'update']);

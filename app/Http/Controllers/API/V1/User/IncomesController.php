@@ -41,6 +41,27 @@ class IncomesController extends Controller
     }
 
     /**
+     * GET INCOME NOTE
+     * @param Request $request
+     * @param string $id
+     * @return void
+     */
+    public function getIncomeNote(Request $request, string $id)
+    {
+        $income = Income::find($id);
+        if (!$income) {
+            return response()->json(['message' => 'Income not found'], 404);
+        }
+
+        if ($income->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $note = $income->income_note;
+        return response()->json($note);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
