@@ -53,6 +53,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/register-year', [UserController::class, 'getRegisterYear']);
 
         //Payment Routes
+        Route::get('/payments/{id}', [GetPaymentsController::class, 'getPayment']);
         Route::get('/payments/{year}/{month}', [GetPaymentsController::class, 'getPayments']);
         Route::post('/payments', [PaymentsController::class, 'store']);
         Route::put('/payments/{id}', [PaymentsController::class, 'update']);

@@ -23,8 +23,13 @@ class Payment extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function paymentNote()
+    public function payment_note()
     {
         return $this->hasOne(PaymentNote::class);
+    }
+
+    public function payment_method()
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
 }

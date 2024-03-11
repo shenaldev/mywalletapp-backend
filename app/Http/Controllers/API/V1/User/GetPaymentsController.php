@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SinglePaymentResource;
 use App\Models\Category;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -40,6 +41,23 @@ class GetPaymentsController extends Controller
 
 
         return response()->json(["payments" => $mappedPayments, "total" => $monthlyTotal]);
+    }
+
+    /**
+     * GET SINGLE PAYMENT
+     * @param Request $request
+     * @param Int $id
+     * @return void
+     */
+    public function getPayment(Request $request, $id)
+    {
+        $payment = Payment::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$payment) return response()->json(["message" => "Payment not found"], 404);
+
+        return response()->json(SinglePaymentResource::make($payment));
     }
 
     /**
