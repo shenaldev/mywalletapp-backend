@@ -8,8 +8,8 @@ use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesContr
 use App\Http\Controllers\API\V1\User\GetPaymentsController;
 use App\Http\Controllers\API\V1\User\IncomesController;
 use App\Http\Controllers\API\V1\User\PaymentsController;
+use App\Http\Controllers\API\V1\User\UserController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,7 +50,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::delete('/categories/{id}', [UserCategoriesController::class, 'destroy']);
 
         //User Routes
-        Route::get('/register-year', [UserController::class, 'getRegisterYear']);
+        Route::get('/record-years', [UserController::class, 'getRecordYears']);
 
         //Payment Routes
         Route::get('/payments/{id}', [GetPaymentsController::class, 'getPayment']);
