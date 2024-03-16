@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('incomes', function (Blueprint $table) {
             $table->id();
-            $table->string('from');
-            $table->float('value', 10, 2, true);
+            $table->string('source', 200);
+            $table->decimal('amount', 12, 2);
             $table->date('date');
+            $table->char('currency', 3)->default('LKR');
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
+            $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

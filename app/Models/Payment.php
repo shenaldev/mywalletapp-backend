@@ -10,7 +10,7 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'payment_for', 'amount', 'date', 'category_id', 'user_id',
+        'name', 'amount', 'date', 'currency', 'category_id', 'payment_method_id', 'user_id'
     ];
 
     public function user()
@@ -23,9 +23,13 @@ class Payment extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function additionalDetails()
+    public function payment_note()
     {
-        return $this->hasOne(PaymentAdditionalDetail::class);
+        return $this->hasOne(PaymentNote::class);
     }
 
+    public function payment_method()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
 }

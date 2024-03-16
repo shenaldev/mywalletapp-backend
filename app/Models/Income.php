@@ -10,7 +10,7 @@ class Income extends Model
     use HasFactory;
 
     protected $fillable = [
-        'from', 'value', 'date', 'user_id',
+        'source', 'amount', 'date', 'currency', 'user_id',
     ];
 
     public function user()
@@ -18,8 +18,8 @@ class Income extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function additionalDetails()
+    public function income_note()
     {
-        return $this->hasOne(IncomeAdditionalDetails::class);
+        return $this->hasOne(IncomeNote::class);
     }
 }

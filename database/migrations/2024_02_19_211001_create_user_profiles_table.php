@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_additional_details', function (Blueprint $table) {
+        Schema::create('user_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('details');
-            $table->bigInteger('payment_id')->unsigned();
-            $table->foreign('payment_id')->on('payments')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('avatar')->nullable();
+            $table->string('default_currency', 3)->default('LKR');
+            $table->bigInteger('user_id')->unsigned();
             $table->timestamps();
+            $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_additional_details');
+        Schema::dropIfExists('user_profiles');
     }
 };

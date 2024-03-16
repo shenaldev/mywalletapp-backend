@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -50,5 +51,15 @@ class User extends Authenticatable
     public function incomes()
     {
         return $this->hasMany(Income::class);
+    }
+
+    public function userCategories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+
+    public function userProfile()
+    {
+        return $this->hasOne(UserProfile::class);
     }
 }

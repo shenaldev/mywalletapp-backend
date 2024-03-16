@@ -15,34 +15,45 @@ class CategoriesTableSeeder extends Seeder
     {
         //
         Category::create([
-            'name' => 'Food',
-            'slug' => Str::slug('Food'),
-        ]);
-
-        Category::create([
-            'name' => 'Reload',
-            'slug' => Str::slug('Reload'),
+            'name' => 'Dining',
+            'slug' => Str::slug('Dining'),
+            'primary' => true
         ]);
 
         Category::create([
             'name' => 'Fuel',
             'slug' => Str::slug('Fuel'),
+            'primary' => true
         ]);
 
         Category::create([
-            'name' => 'Parking',
-            'slug' => Str::slug('Parking'),
+            'name' => 'Transport',
+            'slug' => Str::slug('Transport'),
+            'primary' => true
         ]);
 
         Category::create([
-            'name' => 'Transaction Fees',
-            'slug' => Str::slug('Transaction Fees'),
+            'name' => 'Utilities',
+            'slug' => Str::slug('Utilities'),
+            'primary' => true
+        ]);
+
+        Category::create([
+            'name' => 'Groceries',
+            'slug' => Str::slug('Groceries'),
+            'primary' => true
+        ]);
+
+        Category::create([
+            'name' => 'Health',
+            'slug' => Str::slug('Health'),
+            'primary' => true
         ]);
 
         Category::create([
             'name' => 'General',
             'slug' => Str::slug('General'),
+            'primary' => true
         ]);
-
     }
 }

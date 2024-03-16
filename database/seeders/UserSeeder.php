@@ -15,15 +15,16 @@ class UserSeeder extends Seeder
     {
         //
         User::create([
-            'name' => 'Admin',
-            'email' => 'admin@mywalletcash.com',
-            'password' => Hash::make('45asc%P232uDG48'),
+            'name' => 'Shenal Fernando',
+            'email' => 'admin@shenaldev.com',
+            'password' => Hash::make('1A@Fg12CV'),
+            'is_admin' => true,
         ]);
 
-        User::create([
+        /* User::create([
             'name' => 'Demo',
             'email' => 'demo@mywalletcash.com',
             'password' => Hash::make('password'),
-        ]);
+        ]); */
     }
 }
