@@ -23,7 +23,7 @@ class ReportsController extends Controller
         $paymentTotalByCategory = Payment::where('payments.user_id', $userID)
             ->whereYear('date', $year)
             ->join('categories', 'categories.id', '=', 'payments.category_id')
-            ->selectRaw('sum(amount) as total, category_id, categories.slug as category_slug')
+            ->selectRaw('sum(amount) as total, category_id')
             ->groupBy('category_id')
             ->orderBy('category_id')
             ->get();
