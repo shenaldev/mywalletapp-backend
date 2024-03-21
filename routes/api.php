@@ -9,7 +9,7 @@ use App\Http\Controllers\API\V1\User\GetPaymentsController;
 use App\Http\Controllers\API\V1\User\IncomesController;
 use App\Http\Controllers\API\V1\User\PaymentsController;
 use App\Http\Controllers\API\V1\User\UserController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\API\V1\User\ReportsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -65,10 +65,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/incomes', [IncomesController::class, 'store']);
         Route::put('/incomes/{id}', [IncomesController::class, 'update']);
         Route::delete('/incomes/{id}', [IncomesController::class, 'destroy']);
+
+        //REPORT ROUTE
+        Route::get('/report/{year}', [ReportsController::class, 'index']);
     });
 
-    //REPORT ROUTE
-    Route::get('/report/{year}', [ReportController::class, 'generate']);
 
     /**
      * ADMIN DASHBOARD ROUTES
