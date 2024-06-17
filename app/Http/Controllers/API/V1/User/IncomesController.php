@@ -79,7 +79,7 @@ class IncomesController extends Controller
             $date = Carbon::parse($request->date)->format('Y-m-d');
             //Create Payment
             $income = Income::create([
-                'source' => $request->source,
+                'source' => Str::squish($request->source),
                 'amount' => $request->amount,
                 'date' => $date,
                 'currency' => Str::upper($request->currency),

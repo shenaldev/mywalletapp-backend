@@ -46,7 +46,7 @@ class PaymentsController extends Controller
             $date = Carbon::parse($request->date)->format('Y-m-d');
             //Create Payment
             $payment = Payment::create([
-                'name' => $request->name,
+                'name' => Str::squish($request->name),
                 'amount' => $request->amount,
                 'date' => $date,
                 'currency' => Str::upper($request->currency),
