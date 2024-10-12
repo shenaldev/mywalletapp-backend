@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\V1\Auth\AuthController;
 use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Admin\CategoriesController;
+use App\Http\Controllers\API\V1\Auth\ForgotPasswordController;
 use App\Http\Controllers\API\V1\Common\PaymentMethodsController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
 use App\Http\Controllers\API\V1\User\GetPaymentsController;
@@ -33,6 +34,10 @@ Route::prefix("v1")->middleware("guest")->group(function () {
     //EMAIL VARIFY
     Route::post('/email-verification', [EmailVerificationController::class, 'send']);
     Route::post('/email-verify', [EmailVerificationController::class, 'verify']);
+    //FORGOT PASSWORD
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'send_password_reset_email']);
+    Route::post('/forgot-password-verify', [ForgotPasswordController::class, 'verify_reset_token']);
+    Route::post('/reset-password', [ForgotPasswordController::class, 'reset_password']);
 });
 
 //AUTHENTICATED ROUTES
