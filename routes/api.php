@@ -29,13 +29,19 @@ Route::post("/remove-cookies", [AuthController::class, 'removeCookies']);
 
 //GUEST ROUTES FOR AUTHENTICATION
 Route::prefix("v1")->middleware("guest")->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::middleware('throttle:auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+    });
+
     //EMAIL VARIFY
-    Route::post('/email-verification', [EmailVerificationController::class, 'send']);
+    Route::post('/email-verification', [EmailVerificationController::class, 'send'])
+        ->middleware('throttle:emails');
     Route::post('/email-verify', [EmailVerificationController::class, 'verify']);
+
     //FORGOT PASSWORD
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'send_password_reset_email']);
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'send_password_reset_email'])
+        ->middleware('throttle:emails');
     Route::post('/forgot-password-verify', [ForgotPasswordController::class, 'verify_reset_token']);
     Route::post('/reset-password', [ForgotPasswordController::class, 'reset_password']);
 });

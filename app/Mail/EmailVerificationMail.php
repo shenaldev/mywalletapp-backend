@@ -26,7 +26,7 @@ class EmailVerificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject:'Email Verification Code',
+            subject: 'Email Verification Code',
         );
     }
 
@@ -36,8 +36,8 @@ class EmailVerificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view:'email.verification-mail',
-            with:[
+            view: 'email.email-address-verification',
+            with: [
                 'code' => $this->code,
             ]
         );
