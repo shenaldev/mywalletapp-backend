@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 
 class ForgotPasswordController extends Controller
 {
@@ -33,12 +34,10 @@ class ForgotPasswordController extends Controller
         //Check Email Have An Account If Not Return Error
         $is_email_in_db = User::where('email', '=', $email)->first();
         if (!$is_email_in_db) {
-            return response()->json([
-                'message' => 'Email address not found in our records.',
-                'errors' => [
-                    'email' => 'Email address not found in our records.',
-                ],
+            throw ValidationException::withMessages([
+                'email' => 'Email address not found in our records.'
             ]);
+            return;
         }
 
         $generated_token = $this->generateStringToken(16);
@@ -96,10 +95,8 @@ class ForgotPasswordController extends Controller
         try {
             $this->validate_reset_token($passwordResetRecord, $token);
         } catch (Exception $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-                'error' => true
-            ], 400);
+            throw $exception;
+            return;
         }
 
         return response()->json([
@@ -127,10 +124,8 @@ class ForgotPasswordController extends Controller
         try {
             $this->validate_reset_token($passwordResetRecord, $request->token);
         } catch (Exception $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-                'error' => true
-            ], 400);
+            throw $exception;
+            return;
         }
 
         // If all validation passes, reset the password
@@ -154,21 +149,28 @@ class ForgotPasswordController extends Controller
      */
     private function validate_reset_token($passwordResetRecord, $providedToken)
     {
-        if (!$passwordResetRecord) {
-            throw new Exception("Invalid or expired reset token");
+        $currentTime = Carbon::now();
+
+        if (!$passwordResetRecord || !$passwordResetRecord->created_at) {
+            throw ValidationException::withMessages([
+                'token' => 'Invalid token. Please request a new token.',
+            ]);
         }
 
-        $currentTime = Carbon::now();
         $tokenCreationTime = Carbon::parse($passwordResetRecord->created_at);
-        $tokenAge = $currentTime->diffInMinutes($tokenCreationTime);
+        $tokenExpirationTime = $tokenCreationTime->addMinutes($this->TOKEN_EXPIRATION_MINUTES);
 
-        if ($tokenAge >= $this->TOKEN_EXPIRATION_MINUTES) {
-            throw new Exception("The reset token has expired. Please request a new token.");
+        if ($currentTime->isAfter($tokenExpirationTime)) {
+            throw ValidationException::withMessages([
+                'token' => 'The reset token has expired. Please request a new token.',
+            ]);
         }
 
         // If Token Does Not Match
         if ($providedToken !== $passwordResetRecord->token) {
-            throw new Exception("Invalid reset token");
+            throw  ValidationException::withMessages([
+                'token' => 'Invalid reset token'
+            ]);
         }
     }
 }
