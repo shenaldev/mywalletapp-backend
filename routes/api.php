@@ -4,6 +4,7 @@ use App\Http\Controllers\API\V1\Auth\AuthController;
 use App\Http\Controllers\API\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\API\V1\Admin\CategoriesController;
 use App\Http\Controllers\API\V1\Auth\ForgotPasswordController;
+use App\Http\Controllers\API\V1\Auth\SocialiteController;
 use App\Http\Controllers\API\V1\Common\PaymentMethodsController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
 use App\Http\Controllers\API\V1\User\GetPaymentsController;
@@ -27,11 +28,13 @@ use Illuminate\Support\Facades\Route;
 //PUBLIC COMMON ROUTES
 Route::post("/remove-cookies", [AuthController::class, 'removeCookies']);
 
+
 //GUEST ROUTES FOR AUTHENTICATION
 Route::prefix("v1")->middleware("guest")->group(function () {
     Route::middleware('throttle:auth')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/oauth/{provider}', [SocialiteController::class, 'authenticate']);
     });
 
     //EMAIL VARIFY
