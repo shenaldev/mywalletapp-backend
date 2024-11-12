@@ -9,6 +9,7 @@ use App\Http\Controllers\API\V1\Common\PaymentMethodsController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
 use App\Http\Controllers\API\V1\User\GetPaymentsController;
 use App\Http\Controllers\API\V1\User\IncomesController;
+use App\Http\Controllers\API\V1\User\PasswordController;
 use App\Http\Controllers\API\V1\User\PaymentsController;
 use App\Http\Controllers\API\V1\User\UserController;
 use App\Http\Controllers\API\V1\User\ReportsController;
@@ -66,6 +67,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         //User Routes
         Route::get('/record-years', [UserController::class, 'getRecordYears']);
         Route::put('/profile', [UserController::class, 'update']);
+        Route::put('/password', [PasswordController::class, 'update_password']);
 
         //Payment Routes
         Route::get('/payments/{id}', [GetPaymentsController::class, 'getPayment']);
