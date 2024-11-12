@@ -49,7 +49,9 @@ class SocialiteController extends Controller
 
     private function FindOrCreate($oauthUser)
     {
-        $userInDB = User::where('email', $oauthUser->email)->first();
+        $userInDB = User::where('email', $oauthUser->email)
+            ->with('userProfile')
+            ->first();
 
         // If user not found, create new user
         if (!$userInDB) {
@@ -64,6 +66,7 @@ class SocialiteController extends Controller
             ]);
 
             $newUser->markEmailAsVerified();
+            $newUser = $newUser->load('userProfile');
 
             return $newUser;
         }

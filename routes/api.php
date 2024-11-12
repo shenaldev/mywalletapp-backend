@@ -65,6 +65,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         //User Routes
         Route::get('/record-years', [UserController::class, 'getRecordYears']);
+        Route::put('/profile', [UserController::class, 'update']);
 
         //Payment Routes
         Route::get('/payments/{id}', [GetPaymentsController::class, 'getPayment']);

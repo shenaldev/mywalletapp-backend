@@ -97,13 +97,13 @@ class CategoriesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         if (!Category::find($id)) {
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        if (!$this->isCategoryBelongsToUser($id, auth()->id())) {
+        if (!$this->isCategoryBelongsToUser($id, $request->user()->id)) {
             return response()->json(['message' => 'Unathorized'], 400);
         }
 
