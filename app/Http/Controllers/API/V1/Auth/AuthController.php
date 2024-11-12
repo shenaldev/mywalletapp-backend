@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Crypt;
@@ -24,7 +25,9 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)
+            ->with('userProfile')
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(["message" => "The provided credentials do not match our records"], 401);
@@ -62,18 +65,24 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
+            UserProfile::create([
+                'default_currency' => 'USD',
+                'user_id' => $user->id,
+            ]);
+
             if (!$user) {
                 return response()->json(['error' => 'Registration Faild.'], 500);
             }
 
             $user->markEmailAsVerified();
-            return $user;
+            return $user->load('userProfile');
         });
 
         $token = $result->createToken('authToken')->plainTextToken;
         $encToken = Crypt::encryptString($token);
         $response = [
             'user' => $result,
+            'token' => $encToken,
         ];
 
         $cookie = cookie($this->AUTH_COOKIE_NAME, $encToken, $this->COOKIE_EXPIRE_TIME);
