@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Income;
 use App\Models\IncomeNote;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class IncomesController extends Controller
@@ -18,47 +20,26 @@ class IncomesController extends Controller
      */
     public function index(Request $request)
     {
-        $year = $request->year;
-        $month = $request->month;
-        $endDay = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        $form = date($year . '-' . $month . '-01');
-        $to = date($year . '-' . $month . '-' . $endDay);
-        $user = Auth::user()->id;
+        $request->validate([
+            'year' => 'required|integer|min:2000|max:2100',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
 
-        $incomes = Income::where('user_id', '=', $user)
-            ->whereBetween('date', [$form, $to])
+        $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+        $userId = $request->user()->id;
+
+        $incomes = Income::where('user_id', '=', $userId)
+            ->whereBetween('date', [$startDate, $endDate])
             ->orderBy('date', 'asc')->get();
 
-        //GET TOOTAL SUM OF ALL INCOMES
-        $incomesSum = Income::where('user_id', '=', $user)
-            ->whereBetween('date', [$form, $to])
-            ->sum('amount');
+        //GET TOTAL SUM OF ALL INCOMES
+        $incomesSum = $incomes->sum('amount');
 
         return response()->json([
             'incomes' => $incomes,
             'total' => $incomesSum,
         ]);
-    }
-
-    /**
-     * GET INCOME NOTE
-     * @param Request $request
-     * @param string $id
-     * @return void
-     */
-    public function getIncomeNote(Request $request, string $id)
-    {
-        $income = Income::find($id);
-        if (!$income) {
-            return response()->json(['message' => 'Income not found'], 404);
-        }
-
-        if ($income->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        $note = $income->income_note;
-        return response()->json($note);
     }
 
     /**
@@ -75,18 +56,18 @@ class IncomesController extends Controller
         ]);
 
         $userID = $request->user()->id;
-        $results = DB::transaction(function () use ($request, $userID) {
-            $date = Carbon::parse($request->date)->format('Y-m-d');
-            //Create Payment
+
+        DB::beginTransaction();
+        try {
             $income = Income::create([
                 'source' => Str::squish($request->source),
                 'amount' => $request->amount,
-                'date' => $date,
+                'date' => Carbon::parse($request->date)->format('Y-m-d'),
                 'currency' => Str::upper($request->currency),
                 'user_id' => $userID,
             ]);
 
-            //Create Addtional Detail If Exists
+            //Create Note If Exists
             $note = null;
             if ($request->filled('note')) {
                 $note = IncomeNote::create([
@@ -95,14 +76,27 @@ class IncomesController extends Controller
                 ]);
             }
 
-            if (!$income) {
-                return response()->json(["message" => "Income not created"], 400);
-            }
+            $income['note'] = $note;
 
-            return ['income' => $income, 'note' => $note];
-        });
+            DB::commit();
+            return response()->json(['income' => $income]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to create income']);
+        }
+    }
 
-        return response()->json($results);
+    /**
+     * Display the specified income.
+     */
+    public function show(Request $request, $id)
+    {
+        $income = Income::with(['income_note:id,note,income_id'])
+            ->where('id', '=', $id)
+            ->where('user_id', '=', $request->user()->id)
+            ->firstOrFail();
+
+        return response()->json($income);
     }
 
     /**
@@ -121,16 +115,14 @@ class IncomesController extends Controller
         $income = Income::find($id);
         $note = $income->incomeNote;
 
-        $results = DB::transaction(function () use ($request, $income, $note) {
-            $date = Carbon::parse($request->date)->format('Y-m-d');
-            //Update Income
+        DB::beginTransaction();
+        try {
             $income->source = $request->source;
             $income->amount = $request->amount;
-            $income->date = $date;
+            $income->date = Carbon::parse($request->date)->format('Y-m-d');;
             $income->currency = Str::upper($request->currency);
             $income->save();
 
-            //Update Income Note If Exists
             if ($request->filled('note')) {
                 if (empty($note)) {
                     IncomeNote::create([
@@ -148,16 +140,13 @@ class IncomesController extends Controller
                 }
             }
 
-            return $income;
-        });
-
-        if (!$results) {
-            return response()->json(['message' => 'Income not updated'], 400);
+            DB::commit();
+            return response()->json(['message' => 'Income updated successful.']);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            return response()->json(['message' => 'Failed to update income.']);
         }
-
-        $newIncomeData = Income::find($id);
-        $newIncomeData->incomeNote;
-        return response()->json($newIncomeData, 200);
     }
 
     /**
@@ -165,39 +154,27 @@ class IncomesController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!$this->isIncomeExists($id)) {
-            return response()->json(['message' => 'Income not found'], 404);
-        }
+        $income = Income::findOrFail($id);
 
         if (!$this->isIncomeBelongsToUser($id, Auth::user()->id)) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $income = Income::find($id);
         $note = $income->incomeNote;
-
-        $results = DB::transaction(function () use ($income, $note) {
+        DB::beginTransaction();
+        try {
             if ($note) {
                 $note->delete();
             }
 
             $income->delete();
-            return true;
-        });
 
-        if (!$results) {
-            return response()->json(['message' => 'Income not deleted'], 500);
+            DB::commit();
+            return response()->json(['message' => 'Income deleted successful.']);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to delete income.'], 500);
         }
-
-        return response()->json(['message' => 'Income deleted'], 200);
-    }
-
-    /**
-     * Check if income exists
-     */
-    private function isIncomeExists(string $id)
-    {
-        return Income::where('id', '=', $id)->exists();
     }
 
     /**

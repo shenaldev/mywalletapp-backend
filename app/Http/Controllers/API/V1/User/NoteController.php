@@ -55,7 +55,7 @@ class NoteController extends Controller
             ], 403);
         }
 
-        $note = IncomeNote::where('payment_id', '=', $id)->first();
+        $note = IncomeNote::where('income_id', '=', $id)->first();
         return response()->json($note);
     }
 }

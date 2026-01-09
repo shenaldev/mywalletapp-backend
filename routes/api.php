@@ -39,7 +39,7 @@ Route::prefix("v1")->middleware("guest")->group(function () {
         Route::post('/oauth/{provider}', [SocialiteController::class, 'authenticate']);
     });
 
-    //EMAIL VARIFY
+    //EMAIL VERIFY
     Route::post('/email-verification', [EmailVerificationController::class, 'send'])
         ->middleware('throttle:emails');
     Route::post('/email-verify', [EmailVerificationController::class, 'verify']);
@@ -75,11 +75,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::apiResource('payments', PaymentsController::class);
 
         //Income Routes
-        Route::get('/incomes/{id}', [IncomesController::class, 'getIncomeNote']);
-        Route::get('/incomes/{year}/{month}', [IncomesController::class, 'index']);
-        Route::post('/incomes', [IncomesController::class, 'store']);
-        Route::put('/incomes/{id}', [IncomesController::class, 'update']);
-        Route::delete('/incomes/{id}', [IncomesController::class, 'destroy']);
+        Route::get('incomes/note/{id}', [NoteController::class, 'get_income_note']);
+        Route::apiResource('incomes', IncomesController::class);
 
         //REPORT ROUTE
         Route::get('/report/{year}', [ReportsController::class, 'index']);
