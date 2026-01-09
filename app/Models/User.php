@@ -58,7 +58,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Category::class);
     }
 
-    public function userProfile()
+    public function profile()
     {
         return $this->hasOne(UserProfile::class);
     }

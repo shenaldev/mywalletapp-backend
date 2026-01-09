@@ -9,6 +9,7 @@ use App\Http\Controllers\API\V1\Common\PaymentMethodsController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
 use App\Http\Controllers\API\V1\User\GetPaymentsController;
 use App\Http\Controllers\API\V1\User\IncomesController;
+use App\Http\Controllers\API\V1\User\NoteController;
 use App\Http\Controllers\API\V1\User\PasswordController;
 use App\Http\Controllers\API\V1\User\PaymentsController;
 use App\Http\Controllers\API\V1\User\UserController;
@@ -69,12 +70,9 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::put('/profile', [UserController::class, 'update']);
         Route::put('/password', [PasswordController::class, 'update_password']);
 
-        //Payment Routes
-        Route::get('/payments/{id}', [GetPaymentsController::class, 'getPayment']);
-        Route::get('/payments/{year}/{month}', [GetPaymentsController::class, 'getPayments']);
-        Route::post('/payments', [PaymentsController::class, 'store']);
-        Route::put('/payments/{id}', [PaymentsController::class, 'update']);
-        Route::delete('/payments/{id}', [PaymentsController::class, 'destroy']);
+        // PAYMENT ROUTES
+        Route::get('payments/note/{id}', [NoteController::class, 'get_payment_note']);
+        Route::apiResource('payments', PaymentsController::class);
 
         //Income Routes
         Route::get('/incomes/{id}', [IncomesController::class, 'getIncomeNote']);

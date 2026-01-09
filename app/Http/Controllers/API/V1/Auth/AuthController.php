@@ -26,7 +26,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)
-            ->with('userProfile')
+            ->with('profile')
             ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -58,6 +58,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        /** @var User $result */
         $result = DB::transaction(function () use ($request) {
             $user = User::create([
                 'name' => $request->name,
@@ -71,23 +72,26 @@ class AuthController extends Controller
             ]);
 
             if (!$user) {
-                return response()->json(['error' => 'Registration Faild.'], 500);
+                return response()->json(['error' => 'Registration Failed.'], 500);
             }
 
-            $user->markEmailAsVerified();
-            return $user->load('userProfile');
+            return $user;
         });
 
-        $token = $result->createToken('authToken')->plainTextToken;
-        $encToken = Crypt::encryptString($token);
-        $response = [
-            'user' => $result,
-            'token' => $encToken,
-        ];
+        $user = User::with('profile')->find($result->id);
 
-        $cookie = cookie($this->AUTH_COOKIE_NAME, $encToken, $this->COOKIE_EXPIRE_TIME);
+        if ($user) {
+            $token = $user->createToken('authToken')->plainTextToken;
+            $encToken = Crypt::encryptString($token);
+            $response = [
+                'user' => $user,
+                'token' => $encToken,
+            ];
 
-        return response()->json($response, 201)->withCookie($cookie);
+            $cookie = cookie($this->AUTH_COOKIE_NAME, $encToken, $this->COOKIE_EXPIRE_TIME);
+
+            return response()->json($response, 201)->withCookie($cookie);
+        }
     }
 
     /**
@@ -98,9 +102,9 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
         $cookie = Cookie::forget($this->AUTH_COOKIE_NAME);
-        $sesion_cookie = Cookie::forget('my_wallet_session');
+        $session_cookie = Cookie::forget('my_wallet_session');
 
-        return response()->json(['logout' => true], 200)->withCookie($cookie)->withCookie($sesion_cookie);
+        return response()->json(['logout' => true], 200)->withCookie($cookie)->withCookie($session_cookie);
     }
 
     /**

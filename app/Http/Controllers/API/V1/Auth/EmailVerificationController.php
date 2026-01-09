@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Helpers\ErrorResponse;
 use App\Mail\EmailVerificationMail;
 use App\Models\EmailVerification;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -25,7 +25,7 @@ class EmailVerificationController extends Controller
     public function send(Request $request)
     {
         $request->validate([
-            'email' => 'email|required|string|unique:users,email',
+            'email' => 'email|required|string',
         ]);
 
         //check is Email Already In Database (email_verification table)
@@ -68,14 +68,18 @@ class EmailVerificationController extends Controller
 
         if ($emailInDB) {
             if ($emailInDB->code == $code) {
+                $user = User::where('email', '=', $emailInDB->email)->first();
+                $user->email_verified_at = now();
+                $user->save();
+
                 $emailInDB->delete();
-                return response()->json(['valid' => true, 'message' => 'Validaion Success'], 200);
+                return response()->json(['status' => "success", 'message' => 'Validation Success'], 200);
             }
         }
 
-        $errorBag = ErrorResponse::errorList([
-            'code' => 'Invalid Code',
+        return response()->json([
+            'status' => 'failed',
+            'message' => 'Invalid code.'
         ]);
-        return response()->json($errorBag, 422);
     }
 }
