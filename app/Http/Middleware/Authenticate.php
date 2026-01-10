@@ -19,7 +19,7 @@ class Authenticate extends Middleware
     }
 
     /**
-     * Overide handle function and pass Bearer token from cookies to request header
+     * Override handle function and pass Bearer token from cookies to request header
      * @param token Bearer token from cookies
      *
      */
@@ -28,7 +28,7 @@ class Authenticate extends Middleware
         $token = $request->cookie(env("AUTH_TOKEN_NAME"));
         $decToken = false;
 
-        if ($token == null || "" || empty($token)) {
+        if ($token == null || $token == "" || empty($token)) {
             return response()->json(["message" => "Unauthenticated.", "token" => false], 401);
         }
 

@@ -50,29 +50,29 @@ class UserController extends Controller
             'default_currency' => 'required|string|max:3',
         ]);
 
-        $user = User::findOrfail($request->user()->id);
+        $user = User::findOrFail($request->user()->id);
 
         if ($request->hasFile('avatar')) {
             $request->validate([
                 'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
-            $currentAvatar = $user->userProfile->avatar;
+            $currentAvatar = $user->profile->avatar;
             if ($currentAvatar) {
                 $this->deleteImage($currentAvatar);
             }
 
             $avatar = $this->uploadImage($request->file('avatar'), 'avatars');
-            $user->userProfile->avatar = $avatar;
-            $user->userProfile->save();
+            $user->profile->avatar = $avatar;
+            $user->profile->save();
         }
 
         $user->name = $request->name;
-        $user->userProfile->default_currency = $request->default_currency;
-        $user->userProfile->save();
+        $user->profile->default_currency = $request->default_currency;
+        $user->profile->save();
         $user->save();
 
-        $user = $user->load('userProfile');
+        $user = $user->load('profile');
 
         return response()->json($user, 200);
     }
