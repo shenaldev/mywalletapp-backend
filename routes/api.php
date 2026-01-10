@@ -7,7 +7,6 @@ use App\Http\Controllers\API\V1\Auth\ForgotPasswordController;
 use App\Http\Controllers\API\V1\Auth\SocialiteController;
 use App\Http\Controllers\API\V1\Common\PaymentMethodsController;
 use App\Http\Controllers\API\V1\User\CategoriesController as UserCategoriesController;
-use App\Http\Controllers\API\V1\User\GetPaymentsController;
 use App\Http\Controllers\API\V1\User\IncomesController;
 use App\Http\Controllers\API\V1\User\NoteController;
 use App\Http\Controllers\API\V1\User\PasswordController;
