@@ -51,7 +51,6 @@ class IncomesController extends Controller
             'source' => 'required|string|min:3|max:200',
             'amount' => 'required|numeric',
             'date' => 'required|date',
-            'currency' => 'required|max:3',
             'note' => "nullable|string|max:500",
         ]);
 
@@ -63,7 +62,7 @@ class IncomesController extends Controller
                 'source' => Str::squish($request->source),
                 'amount' => $request->amount,
                 'date' => Carbon::parse($request->date)->format('Y-m-d'),
-                'currency' => Str::upper($request->currency),
+                'currency' => $request->user()->profile->default_currency,
                 'user_id' => $userID,
             ]);
 
@@ -108,7 +107,6 @@ class IncomesController extends Controller
             'source' => 'required|string|min:3|max:200',
             'amount' => 'required|numeric',
             'date' => 'required|date',
-            'currency' => 'required|max:3',
             'note' => "nullable|string|max:500",
         ]);
 
@@ -120,7 +118,6 @@ class IncomesController extends Controller
             $income->source = $request->source;
             $income->amount = $request->amount;
             $income->date = Carbon::parse($request->date)->format('Y-m-d');;
-            $income->currency = Str::upper($request->currency);
             $income->save();
 
             if ($request->filled('note')) {
