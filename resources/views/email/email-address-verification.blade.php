@@ -85,8 +85,7 @@
         <div class="content">
             <h2>Hello, Welcome to {{ env('APP_NAME') }}</h2>
             <p style="font-size: 14px; line-height: 25px; text-align: center; margin: 0 2rem;">Thank you for registering
-                with us! Please verify your email address by clicking
-                the button below:</p>
+                with us! Please verify your email address by entering the following code:</p>
 
             <div class="token-container">
                 <span class="token">{{ $code }}</span>
