@@ -3,6 +3,7 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
+@source '../views/components/*.blade.php';
 @source '../**/*.js';
 
 h1,
@@ -16,4 +17,63 @@ h6 {
 
 body {
     font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+@utility container {
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+    @media (min-width: 720px) {
+        padding-inline: 4rem;
+    }
+}
+
+@theme {
+    --color-primary: oklch(0.5795 0.1921 267.2699);
+    --color-primary-light: oklch(0.75 0.12 267.27);
+    --color-primary-muted: oklch(0.92 0.04 267.27);
+    --color-primary-deep: oklch(0.42 0.2 267.27);
+    --color-text-secondary: oklch(0.35 0.01 0);
+    --color-surface: oklch(0.985 0.002 240);
+    --color-surface-alt: oklch(0.965 0.008 267.27);
+    --color-ink: oklch(0.2 0.02 260);
+    --color-ink-muted: oklch(0.55 0.01 260);
+    --color-accent-green: oklch(0.72 0.17 155);
+    --color-accent-red: oklch(0.62 0.2 25);
+
+    /* ANIMATIONS */
+    --animate-shift-right: shift-right 150ms ease-in-out forwards;
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+
+    @keyframes shift-right {
+        0% {
+            margin-left: 0;
+        }
+        50% {
+            margin-left: 0.3rem;
+        }
+        100% {
+            margin-left: 0.6rem;
+        }
+    }
+
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-16px);
+        }
+    }
+
+    @keyframes pulse-soft {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.6;
+        }
+    }
 }
