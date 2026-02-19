@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::get('/', function () {
-    return view('app');
-});
+Route::get('/', [FrontendController::class, 'index'])->name('home');
+Route::get('/terms-conditions', [FrontendController::class, 'terms_conditions'])->name('terms-conditions');
+Route::get('/privacy-policy', [FrontendController::class, 'privacy_policy'])->name('privacy-policy');
