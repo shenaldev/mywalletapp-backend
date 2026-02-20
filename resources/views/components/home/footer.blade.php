@@ -3,13 +3,11 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             {{-- Brand & About --}}
             <div class="md:col-span-2 space-y-4">
-                <div class="flex items-center gap-2.5">
-                    <span
-                        class="size-8 rounded-lg bg-primary flex items-center justify-center text-white text-sm font-bold">W</span>
-                    <span class="text-lg font-bold">MyWallet</span>
+                <div class="flex gap-2.5">
+                    <img src="/img/logo-white.png" alt="Logo" class="max-w-48 w-full md:max-w-56">
                 </div>
                 <p class="text-white/60 text-sm leading-relaxed max-w-sm">
-                    MyWallet is a simple, powerful personal finance tracker. Record your income and expenses,
+                    MyWalletCash is a simple, powerful personal finance tracker. Record your income and expenses,
                     organize spending by categories and payment methods, and gain clarity over your financial life.
                 </p>
                 {{-- Social Media --}}

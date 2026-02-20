@@ -2,10 +2,7 @@
      class="fixed top-0 inset-x-0 z-50 bg-white/70 backdrop-blur-lg border-b border-primary/10 transition-all duration-300">
      <div class="container flex items-center justify-between h-16">
          <a href="/" class="flex items-center gap-2.5 group">
-             <span
-                 class="size-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight select-none">W</span>
-             <span
-                 class="text-lg font-bold tracking-tight text-ink group-hover:text-primary transition-colors">MyWallet</span>
+             <img src="/img/logo.png" alt="Logo" class="max-w-48 w-full md:max-w-56">
          </a>
          <div class="flex items-center gap-6">
              <a href="#features"
