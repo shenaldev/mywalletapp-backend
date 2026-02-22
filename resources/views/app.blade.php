@@ -1,6 +1,6 @@
 <x-layouts.main-layout>
     {{-- HERO --}}
-    <section class="min-h-screen pt-16 flex items-center relative">
+    <section class="min-h-screen pt-16 flex items-center relative overflow-hidden">
         {{-- Decorative background shapes --}}
         <div
             class="absolute top-24 -left-32 size-96 rounded-full bg-primary-muted opacity-60 blur-3xl animate-float pointer-events-none">
@@ -405,7 +405,7 @@
                             sign up for early access. Available for iOS and Android.</p>
                         <div class="flex flex-wrap gap-3 pt-2">
                             {{-- Email Signup --}}
-                            <form class="flex gap-2 w-full md:w-auto">
+                            <form class="flex gap-2 flex-col md:flex-row w-full">
                                 <input type="email" placeholder="Enter your email"
                                     class="flex-1 md:flex-none px-4 py-3 rounded-xl border border-primary/20 focus:border-primary outline-none transition-colors text-sm"
                                     required>

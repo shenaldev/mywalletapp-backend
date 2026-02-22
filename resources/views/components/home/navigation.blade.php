@@ -1,8 +1,8 @@
  <nav id="nav"
-     class="fixed top-0 inset-x-0 z-50 bg-white/70 backdrop-blur-lg border-b border-primary/10 transition-all duration-300">
+     class="fixed max-w-screen top-0 inset-x-0 z-50 bg-white/70 backdrop-blur-lg border-b border-primary/10 transition-all duration-300">
      <div class="container flex items-center justify-between h-16">
          <a href="/" class="flex items-center gap-2.5 group">
-             <img src="/img/logo.png" alt="Logo" class="max-w-48 w-full md:max-w-56">
+             <img src="/img/logo.png" alt="Logo" class="max-w-32 w-full md:max-w-56">
          </a>
          <div class="flex items-center gap-6">
              <a href="#features"
