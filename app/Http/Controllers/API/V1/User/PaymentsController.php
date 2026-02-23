@@ -142,7 +142,7 @@ class PaymentsController extends Controller
                 $payment->update([
                     'name' => $request->name,
                     'amount' => $request->amount,
-                    'date' => Carbon::parse($request->data)->format('Y-m-d'),
+                    'date' => Carbon::parse($request->date)->format('Y-m-d'),
                     'category_id' => $request->category_id,
                     'payment_method_id' => $request->payment_method_id,
                 ]);
