@@ -175,6 +175,33 @@ class IncomesController extends Controller
     }
 
     /**
+     * Search Income
+     */
+    public function search(Request $request)
+    {
+        $request->validate([
+            'query' => 'required|string|min:1|max:255',
+        ]);
+
+        $userId = $request->user()->id;
+        $query = trim($request->query('query'));
+        $from = $request->query('from');
+        $to = $request->query('to');
+
+        $incomes = Income::where('user_id', $userId)
+            ->where('source', 'like', "%{$query}%")
+            ->when($from && $to, fn($q) => $q->whereBetween('date', [$from, $to]))
+            ->when($from && !$to, fn($q) => $q->where('date', '>=', $from))
+            ->when(!$from && $to, fn($q) => $q->where('date', '<=', $to))
+            ->orderBy('date', 'desc')
+            ->limit(30)
+            ->get();
+
+        return response()->json($incomes);
+    }
+
+
+    /**
      * Check if income belongs to user
      */
     private function isIncomeBelongsToUser(string $id, string $userID)

@@ -76,6 +76,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         //Income Routes
         Route::get('incomes/note/{id}', [NoteController::class, 'get_income_note']);
+        Route::get('incomes/search', [IncomesController::class, 'search']);
         Route::apiResource('incomes', IncomesController::class);
 
         //REPORT ROUTE
