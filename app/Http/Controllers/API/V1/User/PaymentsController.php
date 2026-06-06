@@ -216,10 +216,10 @@ class PaymentsController extends Controller
 
         $payments = Payment::where('user_id', $userId)
             ->where('name', 'like', "%{$query}%")
-            ->when($from && $to, fn($q) => $q->whereBetween('created_at', [$from, $to]))
-            ->when($from && !$to, fn($q) => $q->where('created_at', '>=', $from))
-            ->when(!$from && $to, fn($q) => $q->where('created_at', '<=', $to))
-            ->orderBy('created_at', 'desc')
+            ->when($from && $to, fn($q) => $q->whereBetween('date', [$from, $to]))
+            ->when($from && !$to, fn($q) => $q->where('date', '>=', $from))
+            ->when(!$from && $to, fn($q) => $q->where('date', '<=', $to))
+            ->orderBy('date', 'desc')
             ->limit(30)
             ->get();
 
