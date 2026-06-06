@@ -201,6 +201,32 @@ class PaymentsController extends Controller
     }
 
     /**
+     * Search Payment
+     */
+    public function search(Request $request)
+    {
+        $request->validate([
+            'query' => 'required|string|min:1|max:255',
+        ]);
+
+        $userId = $request->user()->id;
+        $query = trim($request->query('query'));
+        $from = $request->query('from');
+        $to = $request->query('to');
+
+        $payments = Payment::where('user_id', $userId)
+            ->where('name', 'like', "%{$query}%")
+            ->when($from && $to, fn($q) => $q->whereBetween('created_at', [$from, $to]))
+            ->when($from && !$to, fn($q) => $q->where('created_at', '>=', $from))
+            ->when(!$from && $to, fn($q) => $q->where('created_at', '<=', $to))
+            ->orderBy('created_at', 'desc')
+            ->limit(30)
+            ->get();
+
+        return response()->json($payments);
+    }
+
+    /**
      * Check if payment belongs to user
      */
     private function isPaymentBelongsToUser($id, $userID)

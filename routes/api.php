@@ -71,6 +71,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         // PAYMENT ROUTES
         Route::get('payments/note/{id}', [NoteController::class, 'get_payment_note']);
+        Route::get('payments/search', [PaymentsController::class, 'search']);
         Route::apiResource('payments', PaymentsController::class);
 
         //Income Routes
