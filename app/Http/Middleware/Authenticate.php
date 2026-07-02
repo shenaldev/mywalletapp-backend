@@ -16,7 +16,7 @@ class Authenticate extends Middleware
      */
     public function handle($request, Closure $next, ...$guards)
     {
-        $token = $request->cookie(env("AUTH_TOKEN_NAME"));
+        $token = $request->cookie(config("app.auth.token_name"));
 
         if ($token != null && $token != "" && !empty($token)) {
             $decToken = false;

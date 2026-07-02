@@ -151,4 +151,17 @@ return [
         // 'store'  => 'redis',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Configs
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the authentication settings for your application. 
+    | You can define multiple authentication guards and providers, 
+    | allowing you to customize how users are authenticated and retrieved from your database.
+    |
+     */
+    'auth' => [
+        'token_name' => env('AUTH_TOKEN_NAME', 'auth_token'),
+    ]
 ];
