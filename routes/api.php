@@ -32,7 +32,7 @@ Route::post("/remove-cookies", [AuthController::class, 'removeCookies']);
 
 //GUEST ROUTES FOR AUTHENTICATION
 Route::prefix("v1")->middleware("guest")->group(function () {
-    Route::middleware('throttle:auth')->group(function () {
+    Route::middleware('throttle:login')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/oauth/{provider}', [SocialiteController::class, 'authenticate']);
